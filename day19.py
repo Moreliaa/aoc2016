@@ -13,3 +13,10 @@ def pt1(n):
 
 print(pt1(v))
 
+def pt2(n):
+    offset = 1
+    while offset * 3 < n:
+        offset *= 3
+    return n - offset
+
+print(pt2(v))
