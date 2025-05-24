@@ -20,7 +20,7 @@ targets = frozenset(targets)
 print((x_start,y_start))
 print(targets)
 
-def astar(start_pos):
+def astar_nodes(start_pos):
     open = {0: [start_pos] }
     closed = {}
     lowest_steps = [0]
@@ -60,20 +60,21 @@ def astar(start_pos):
 distance_map = {}
 targets_total = frozenset(targets | set({(x_start,y_start)}))
 for start in targets_total:
-    print("start")
     distance_map[start] = {}
-    closed = astar(start)
+    closed = astar_nodes(start)
     for end in targets_total:
         distance_map[start][end] = closed[end]
 
 
-def mock(targets, distance_map):
+def astar_bot(targets, distance_map, ispt2):
     open = {0: [((x_start, y_start), targets)]}
     closed = {}
     lowest_steps = [0]
     heapq.heapify(lowest_steps)
 
-    while True:
+    pt2_results = []
+    heapq.heapify(pt2_results)
+    while len(lowest_steps) > 0:
         key = heapq.heappop(lowest_steps)
         states = open[key]
         open[key] = []
@@ -83,9 +84,16 @@ def mock(targets, distance_map):
             pos = s[0]
             t = s[1]
             if len(t)==0:
-                print(key)
-                finished = True
-                break
+                if not ispt2:
+                    print(key)
+                    finished = True
+                    break
+                else:
+                    last = (x_start, y_start)
+                    steps = key+distance_map[pos][last]
+                    heapq.heappush(pt2_results, steps)
+                    continue
+
             closed[s] = key
 
             dirs = t
@@ -106,6 +114,10 @@ def mock(targets, distance_map):
                     heapq.heappush(lowest_steps, steps)
         if finished:
             break
+    if ispt2:
+        return heapq.heappop(pt2_results)
+
 
 print(distance_map)
-mock(targets, distance_map)
+astar_bot(targets, distance_map, False)
+print(astar_bot(targets, distance_map, True))
